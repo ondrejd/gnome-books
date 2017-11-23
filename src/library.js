@@ -36,7 +36,7 @@ const Application = imports.application;
 const WindowMode = imports.windowMode;
 const Utils = imports.utils;
 
-const Library = new Lang.Class({
+var Library = new Lang.Class({
 	Name: 'Library',
 
 	_init: function() {
@@ -59,7 +59,7 @@ const Library = new Lang.Class({
             this.path = GLib.get_home_dir() + "/Books/" + this.fileInfo.get_name();
             let thumnailPath = this.path.substring(0, this.path.length - 5) + ".jpg";
 
-            GLib.spawn_command_line_sync("epub-thumbnailer.py " + this.path + " " + thumnailPath + " 200");
+            GLib.spawn_command_line_sync("epub-thumbnailer.py '" + this.path + "' '" + thumnailPath + "' 200");
             this.pixbuf = GdkPixbuf.Pixbuf.new_from_file(thumnailPath);
             let thumbnailedPixbuf = null;
 
@@ -76,8 +76,8 @@ const Library = new Lang.Class({
                 Application.application.getScaleFactor(),
                 Application.application.getGdkWindow());
 
-            let [otitle, title] = GLib.spawn_command_line_sync("epub-metadata.py " + this.path + " getTitle()", null);
-            let [oauthor, author] = GLib.spawn_command_line_sync("epub-metadata.py " + this.path + " getAuthor()", null);
+            let [otitle, title] = GLib.spawn_command_line_sync("epub-metadata.py '" + this.path + "' getTitle()");
+            let [oauthor, author] = GLib.spawn_command_line_sync("epub-metadata.py '" + this.path + "' getAuthor()");
 
             item = { icon: this.surface,
                      epubName: this.fileInfo.get_name(),
@@ -89,7 +89,7 @@ const Library = new Lang.Class({
             this._items[this.id] = item;
             this.id = this.id + 1;
 
-            GLib.spawn_command_line_sync("rm -r " + thumnailPath);
+            GLib.spawn_command_line_sync("rm -r '" + thumnailPath + "'");
             this.fileInfo = libEnum.next_file(null);
         }
 
